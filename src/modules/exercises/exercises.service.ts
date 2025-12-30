@@ -69,7 +69,11 @@ export class ExercisesService {
     }
 
     async remove(id: string): Promise<void> {
-        const exercise = await this.findOne(id);
-        await this.exerciseRepository.remove(exercise);
+        const result = await this.exerciseRepository.delete(id);
+
+        if (result.affected === 0) {
+            throw new NotFoundException('Exercise not found');
+        }
     }
+
 }
