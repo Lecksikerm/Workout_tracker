@@ -5,6 +5,7 @@ import { User } from './database/entities/user.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ExercisesModule } from './modules/exercises/exercise.module';
+import { WorkoutsModule } from './modules/workouts/workouts.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { ExercisesModule } from './modules/exercises/exercise.module';
     TypeOrmModule.forFeature([User]),
     AuthModule,
     UsersModule,
-    ExercisesModule
+    ExercisesModule,
+    WorkoutsModule,
   ],
 })
 export class AppModule { }

@@ -1,5 +1,7 @@
-import { Entity, Column, Unique } from 'typeorm';
+import { Entity, Column, Unique, OneToMany } from 'typeorm';
 import { Base } from './base.entity';
+import { Workout } from './workout.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 @Unique(['email'])
@@ -11,6 +13,10 @@ export class User extends Base {
     email: string;
 
     @Column({ type: 'varchar' })
+    @Exclude()
     password: string;
+
+    @OneToMany(() => Workout, workout => workout.user)
+    workouts: Workout[];
 }
 
