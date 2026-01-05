@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ExercisesModule } from './modules/exercises/exercise.module';
 import { WorkoutsModule } from './modules/workouts/workouts.module';
+import { WorkoutTemplatesModule } from './modules/workout-templates/workout-templates.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { WorkoutsModule } from './modules/workouts/workouts.module';
     UsersModule,
     ExercisesModule,
     WorkoutsModule,
+    WorkoutTemplatesModule,
   ],
 })
 export class AppModule { }
