@@ -14,13 +14,29 @@ import { UserWorkoutSet } from './entities/user-workout-set.entity';
 
 config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && !process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL must be set in production');
+}
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+
+    ...(isProduction
+        ? {
+            url: process.env.DATABASE_URL,
+            ssl: {
+                rejectUnauthorized: false,
+            },
+        }
+        : {
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT),
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+        }),
 
     entities: [
         User,
@@ -34,10 +50,12 @@ export const AppDataSource = new DataSource({
         UserWorkoutSet,
     ],
 
-    migrations: ['src/database/migrations/*.ts'],
+    migrations: ['dist/database/migrations/*.js'],
 
     synchronize: false,
-    logging: true,
+    logging: !isProduction,
 });
+
+
 
 

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { User } from './database/entities/user.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -15,26 +16,41 @@ import { UserWorkoutsModule } from './modules/user-workouts/user-workouts.module
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: config.get('DB_NAME'),
-        autoLoadEntities: true,
-        synchronize: false,
-      }),
+      useFactory: (config: ConfigService) => {
+        const isProd = config.get<string>('NODE_ENV') === 'production';
+
+        return {
+          type: 'postgres' as const,
+          autoLoadEntities: true,
+          synchronize: false,
+
+          ...(isProd
+            ? {
+              url: config.get<string>('DATABASE_URL'),
+              ssl: { rejectUnauthorized: false },
+            }
+            : {
+              host: config.get<string>('DB_HOST'),
+              port: config.get<number>('DB_PORT') || 5432,
+              username: config.get<string>('DB_USERNAME'),
+              password: config.get<string>('DB_PASSWORD'),
+              database: config.get<string>('DB_NAME'),
+            }),
+        };
+      },
     }),
+
     TypeOrmModule.forFeature([User]),
+
     AuthModule,
     UsersModule,
     ExercisesModule,
     WorkoutsModule,
     WorkoutTemplatesModule,
-    UserWorkoutsModule
+    UserWorkoutsModule,
   ],
 })
 export class AppModule { }
+
 
 
